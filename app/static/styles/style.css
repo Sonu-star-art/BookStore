@@ -1,0 +1,14 @@
+
+.book{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 10px;
+    border: solid 1px black; 
+    max-width: 50%;
+}
+
+ /* Remember this class! and the !important thing too (it essentially overrides everything else) */
+.hidden{
+    display: none !important;
+}

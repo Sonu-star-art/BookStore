@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Page</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.3/css/bulma.min.css">
+    </head>
+    <body >
+        <div class="columns is-vcentered" style="height: 100vh;">
+            <div class="column is-flex" style="flex-direction: column; align-items: center;">
+                <h1 class="title">E-Commerce Book Store</h1>
+                <br>
+                <br>
+
+                <div class="box is-flex is-flex-direction-column" style="align-items: center; width: 30%; align-content: center; justify-self: center;">
+                    <h2 class="title">Login</h2>
+                    <form action="/login/submit-login" method="post">
+                        <input class="input" type="text" name="username" placeholder="Username" required>
+                        <input class="input" type="password" name="password" placeholder="Password" required>
+                        <input class="button" type="submit" value="Login">
+                    </form>
+                    
+                    <a href="/register">Register</a>
+        
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
