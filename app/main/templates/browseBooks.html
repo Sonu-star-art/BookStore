@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/app/main/static/styles/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    </head>
+    <body>
+        <div class="section" style="display : flex; flex-direction : column; gap : 20px;">
+            <h1 class="title">Browse books and add them to the cart</h1>
+
+            <button type="submit" class="button" onclick="window.location.href = '/home'" style="width : fit-content">Return to Home</button>
+
+            <div style="display: flex; flex-direction: column; max-width: 30%; gap : 2px">
+                <input id="book-search-input" class="input" type="text" placeholder="Book Name">
+                <button type="submit" class="button" onclick="clearSearch()">Clear Search</button>
+            </div>
+
+            <!--Because the cart is in the flask session, we don't need to return the cart here and can instead just redirect to the order page right here -->
+            <button type="submit" class="button" onclick="window.location.href = '/order'" style="display: flex; flex-direction: column; max-width: 30%; align-items: center;">Proceed to order checkout</button>
+
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    <div class="warning-message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
+
+        <div class="columns is-vcentered" style="width: 100%; justify-content: center;">
+            <div class="column" style="display: flex; flex-direction: column; justify-content: center; width: 100%;">
+
+
+                <div class="section">
+                    <div class="book-holder grid" style="gap : 60px">
+                        {% for book in books %}
+                            <div class="cell">
+                                <div class="book box" style="width : fit-content; height : 300px">
+                                    <div class="book-data" data-book='{{ book | tojson }}'></div>
+                                    <div style="display: flex; flex-direction: row; gap: 5px;">
+                                        Title:  <!-- the 'Title' header and the actual title have to be separate because the book-title class is used by js for searching -->
+                                        <div class="book-title">
+                                            {{book['title']}}
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: row; gap: 5px;">
+                                        Author:
+                                        <div class="book-author">
+                                            {{book['author']}}
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: row; gap: 5px;">
+                                        Price:
+                                        <div class="book-price">
+                                            £{{book['price']}}
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: row; gap: 5px;">
+                                        Stock:
+                                        <div class="book-stock">
+                                            {{book['stock']}}
+                                        </div>
+                                    </div>
+
+                                    <div class="cart-total-holder hidden" style='display: flex; flex-direction: row; gap: 5px; color: green;'>
+                                        <div>Total in cart: </div>
+                                        <div class='cart-total'>
+
+                                        </div>
+                                     </div>
+                                    
+                                     <br>
+                                     <br>
+
+                                     <div class="cart-buttons">
+                                        <button class="button" type="submit" onclick='add_to_cart({{ book | tojson }})'>Add one to cart</button> <!-- errors here in vscode are a load of nonsense! -->
+                                        <button class="button" type="submit" onclick='remove_from_cart({{ book | tojson }})'>Remove one from cart</button> <!-- errors here in vscode are a load of nonsense! -->
+                                     </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </body>
+
+    <script>
+        function clearSearch(){
+            document.getElementById("book-search-input").value = ""
+            updateBookList()  // book list doesn't get updated automatically for some reason
+        }
+
+
+        function updateBookList(){
+            const searchInput = document.getElementById("book-search-input").value.toLowerCase().trim()
+            const books = document.querySelectorAll('.book');
+
+            console.log(books)
+            
+            books.forEach(book => {
+                if (book.querySelector('.book-title').textContent.toLowerCase().trim().includes(searchInput) ||
+                 book.querySelector('.book-author').textContent.toLowerCase().trim().includes(searchInput))
+                {
+                    book.classList.remove("hidden")
+                }
+                else{
+                    book.classList.add("hidden")
+                }
+            });
+        }
+
+
+        function add_to_cart(selectedBook){
+
+            url = `/browse-books/add-one-book-to-cart/${selectedBook['book_id']}`
+
+            // If we're just posting and don't care about getting return data from the backend, then everthing before '.then' is all you need 
+            // BUT it's good practice to have a response all the time, even if its just a confirmation that everything went fine.
+            fetch(url, {
+                method : 'POST',
+                headers : { 'Content-Type' : 'application/json'},
+                body : JSON.stringify(selectedBook['book_id'])  // passing the book_id into the flask route, where it will find the book in the database and add it to the session cart
+            })
+            .then(response=>{
+                return response.json()
+            })
+            .then(data =>{  // data is response.json!
+                if (data.success == false){
+
+                    if (data.message){
+                        console.log(data.message)
+                        return
+                    }
+                    console.log("Couldn't add book to cart")
+                }
+                else if (data.success == true){
+                    console.log(`Posted book to cart successfully`)
+
+                        // Refresh 
+                        get_all_books_in_cart().then(cartData =>{
+                            update_books_with_cart(cartData)
+                    })
+                }
+            })
+        }
+
+
+        function remove_from_cart(selectedBook){
+            url = `/browse-books/remove-one-book-to-cart/${selectedBook['book_id']}`
+
+            // If we're just posting and don't care about getting return data from the backend, then everthing before '.then' is all you need 
+            // BUT it's good practice to have a response all the time, even if its just a confirmation that everything went fine.
+            fetch(url, {
+                method : 'POST',
+                headers : { 'Content-Type' : 'application/json'},
+                body : JSON.stringify(selectedBook['book_id'])  // passing the book_id into the flask route, where it will find the book in the database and add it to the session cart
+            })
+            .then(response=>{
+                return response.json()
+            })
+            .then(data =>{
+                if (data.success == false){
+
+                    if (data.message){
+                        console.log(data.message)
+                        return
+                    }
+                    console.log(`Couldn't remove book from cart: ${data.error}`)
+                }
+                else if (data.success == true){
+                    console.log('Removed book from cart successfully')
+
+                    // Refresh 
+                    get_all_books_in_cart().then(cartData =>{
+                        update_books_with_cart(cartData)
+                    })
+                }         
+            })
+        }
+
+
+        function update_books_with_cart(cartData){
+            const books = document.querySelectorAll('.book')
+
+            books.forEach(book => {
+                
+                // This gets the book stored in the div inside the book div (but this is in a string format)
+                const bookQuery = book.querySelector('.book-data').getAttribute('data-book')
+
+                // parse from string to JSON
+                const bookData = JSON.parse(bookQuery)
+
+                cart_contains_book = false
+
+                Object.entries(cartData).forEach(([key, value]) => {
+
+                    // If book_id in list of book elements is the same as the cart book_id, and the quantity is more than 0
+                    if (bookData['book_id'] == key && value > 0){
+                        book.querySelector('.cart-total').textContent = value
+                        book.querySelector('.cart-total-holder').classList.remove("hidden")
+                        console.log(key + " " + value)
+
+                        cart_contains_book = true
+                        // I would break here to save processing time, but apparently you can't break out of a foreach loop in js. FUN.
+                    }
+                });
+
+                // If cart doesn't contain this book, hide the 'total in cart' text
+                if(!cart_contains_book){
+                    book.querySelector('.cart-total').textContent = 0
+                    book.querySelector('.cart-total-holder').classList.add("hidden")
+                }
+            });
+        }
+
+
+        // Async means any async fetch will halt the execution of the function until the fetch returns something
+        async function get_all_books_in_cart(){
+
+            url = "/browse-books/get-cart"
+            cartData = {}
+
+            // Not asyncronously:
+            // fetch(url)
+            // .then(response => {
+            //     if (!response.ok){
+            //         throw new Error('Network response not good')
+            //     }
+            //     return response.json()
+            // })
+            // .then(data => {
+            //     console.log(JSON.stringify(data['book_cart']) +  "  is getting all books a success?: " + JSON.stringify(data['success']) + " " + JSON.stringify(data['error']))
+            //     if(data['success'] == true){
+            //         cartData = data['book_cart']
+            //         console.log(cartData)
+            //     }
+            // })
+            // .catch(error => {
+            //     console.error('Fetch error:', error)
+            // })
+            // console.log("running")
+            // return cartData
+
+            // Asyncronously:
+            try{
+                const response = await fetch(url);
+                if (!response.ok){
+                     throw new Error('Network response not good')
+                }
+
+                const data = await response.json() // data is response.json()
+                if (data['success'] == true){
+                    cartData = data['book_cart']
+                    console.log(cartData)
+                }
+            }
+            catch(error){
+                console.error('Fetch error: ', error)
+            }
+
+            return cartData
+        }
+
+        document.getElementById('book-search-input').addEventListener('input', updateBookList)
+        document.getElementById('book-search-input').focus()
+
+        // Because get_all_book_in_cart is an async function, it'll always return a 'promise' that gets converted into the actual data the function returns e.g. string. 
+        // Meaning there's chance the variable assigned to the return of the function won't have any valid data when its needed. So we do this below, instead of doing cartData = get_all_books_in_cart()
+        get_all_books_in_cart().then(cartData => {
+            update_books_with_cart(cartData)
+        })
+
+
+    </script>
+</html>

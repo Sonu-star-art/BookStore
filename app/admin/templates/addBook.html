@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/app/main/static/styles/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+        <script src="/app/admin/static/js/updateBooks.js"></script>
+
+        <style>
+            #add-book-form{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 80%;
+            }
+
+        </style>
+    </head>
+    <body>
+        <button class="button" style="display: flex; width: 10%;" onclick="window.location.href='/home'"> Return to home </button>
+        <br>
+        <br>
+        <h1 class="title">Add a new book to the database</h1>
+
+        <div class="book box" style="max-width: 50%;">
+            <form id="add-book-form" action="/add-book/add-book-submit" method="post">
+                <input class="input" type="text" required placeholder="Title:" name="title">
+                <input class="input" type="text" required placeholder="Author:" name="author">
+                <input class="input" type="text" required placeholder="Genre:" name="genre">
+                <input class="input" type="text" required placeholder="ISBN:" name="isbn">
+                <input class="input" type="number" required step="0.01" placeholder="Price:" name="price">
+                <input class="input" type="number" required placeholder="Stock:" name="stock">
+                
+                <button class="button" style="width: 40%;" type="submit"> Add book </button>
+            </form>
+        </div>
+
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {%endwith%}
+    </body>
+
+</html>

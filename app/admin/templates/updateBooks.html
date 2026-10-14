@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/app/main/static/styles/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+        <script src="/app/admin/static/js/updateBooks.js"></script>
+    </head>
+    <body>
+        <div id="book-data" data-books="{{ books }}"></div>
+
+        <button onclick="window.location.href='/home'" class="button" style="width : fit-content;"> Return to Home</button>
+        <br>
+        <br>
+
+        <h1 class="title">Update and remove books</h1>
+
+        <div class="book-holder">
+            {% for book in books %}
+            <!-- this onclick actually works fine. Don't listen to VsCode whining -->
+                <div class="book">
+                    <div onclick='window.location.href = "{{url_for('admin.edit_book', book_id=book['book_id'])}}"'>
+                        <div class="title"> {{book['title']}} </div>
+                        <div class="author"> {{book['author']}} </div>
+                        <div class="genre"> {{book['genre']}} </div>
+                        <div class="price"> £{{book['price']}} </div>
+                        <div class="stock"> Stock: {{book['stock']}} </div>
+                    </div>
+                    
+                    <button class="button" style="width: fit-content;" onclick='window.location.href = "{{url_for('admin.edit_book', book_id=book['book_id'])}}"'> Edit Book </button>
+                    <button class="button" style="width: fit-content;" onclick="delete_book({{ book['book_id'] }})"> DELETE BOOK </button>
+                </div>
+            {%endfor%}
+        </div>
+    </body>
+
+
+    <script>
+    </script>
+</html>

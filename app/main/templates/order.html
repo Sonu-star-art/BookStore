@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order</title>
+    <link rel="stylesheet" href="/app/main/static/styles/style.css"> 
+</head>
+<body>
+    <div id="cart" data-cart='{{ cart_data | tojson}}'></div>
+
+    You bought:
+    {% for book in cart_data %}
+        <div class="book">
+            <div> {{ cart_data[book]['quantity'] }} book(s) with a title of: </div>
+            <div>{{cart_data[book]['title']}}</div>
+            <div> By: {{cart_data[book]['author']}}</div>
+            <div> With a price of: {{cart_data[book]['price']}}</div>
+        </div>
+    {% endfor %}
+
+    The total cost is:
+    <div id="cost-display"></div>
+
+
+    <!-- Ugh not working. Just do this kind of stuff in python or js
+        {% set total_price = 0 %}
+
+    {% for book in cart_data %}
+        {% set current_price = cart_data[book]['price'] * cart_data[book]['quantity'] %}
+        {% set total_price = total_price + current_price %}
+    {% endfor %}
+
+    <div> {{ total_price }} </div>
+    -->
+
+
+    <button id="process-button" onclick='processPayment({{cart_data | tojson }})' style="width: 40%;">Process Payment</button>
+
+    <button id="return-button" onclick="window.location.href='/browse-books'" class="hidden">Return to Browse Books</button>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+
+    <!-- This is what you have to do to essentially 'import' a libary into a js file -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+    <script src="/app/main/static/Js/order.js"></script>
+</body>
+</html>

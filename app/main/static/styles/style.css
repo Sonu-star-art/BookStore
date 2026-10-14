@@ -1,0 +1,28 @@
+body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.book{
+    display: flex;
+    flex-direction: column;
+    border: solid black 2px;
+    border-radius: 5px;
+    padding: 10px;
+    gap: 5px;
+}
+
+.book-holder{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: fit-content;
+    
+}
+
+ /* Remember this class! and the !important thing too (it essentially overrides everything else) */
+.hidden{
+    display: none !important;
+}
+

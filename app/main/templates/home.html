@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/app/main/static/styles/style.css"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+<body>
+    <div class="columns is-flex is-vcentered is-hcentered" style="flex-direction: column; height: 100vh;">
+        <div class="column is-flex" style="flex-direction: column; align-items: center;">
+            <h1 class="title">Welcome to the Book Store</h1>
+            <div class="box is-flex is-flex-direction-column" style="gap: 10px;">
+                <div id="is-admin" data-is-admin="{{ is_admin | tojson }}"></div>
+                <a class="button" href="/login">Logout</a>
+                <a class="button" href="/browse-books">Browse books</a>
+                <br>
+                <a class="button" id="update-books-button" href="/update-books" class="hidden">Update books (Admin access only)</a>
+                <a class="button" id="add-book-button" href="/add-book" class="hidden">Add book (Admin access only)</a>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    // unhide update-books if admin (even if not admin and user acceses the /update-books route, they should
+    // be redirected to home in python because of decorators!)
+    if (JSON.parse(document.querySelector('#is-admin').getAttribute('data-is-admin')) == true){
+        document.querySelector('#update-books-button').classList.remove('hidden')
+        document.querySelector('#add-book-button').classList.remove('hidden')
+    }
+</script>
+</html>

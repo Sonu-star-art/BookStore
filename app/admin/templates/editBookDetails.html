@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/app/main/static/styles/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+        <script src="/app/admin/static/js/updateBooks.js"></script>
+
+
+        <style>
+            #edit-book-form{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 80%;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="book-data" data-books="{{ book }}"></div>
+
+        <button onclick="window.location.href='/update-books'" class="button" style="width : fit-content"> Return to Update Books </button>
+
+        <div class="book" style="max-width: 50%;">
+            <form id="edit-book-form" action="/update-books/edit-book/edit-book-submit" method="post" style="display: flex; flex-direction : column; width : 100%">
+                <input class="button" type="text" placeholder="Title: {{book['title']}}" name="title">
+                <input class="button" type="text" placeholder="Author: {{book['author']}}" name="author">
+                <input class="button" type="text" placeholder="Genre: {{book['genre']}}" name="genre">
+                <input class="button" type="number" step="0.01" placeholder="Price: £{{book['price']}}" name="price">
+                <input class="button" type="number" placeholder="Stock: {{book['stock']}}" name="stock">
+                <input type="text" name="book_id" class="hidden" value="{{ book['book_id'] }}">   <!-- this is hidden -->
+                
+                <button class="button" type="submit" style="width : fit-content; align-self: center"> Commit Changes </button>
+            </form>
+
+            <button onclick='delete_book({{ book["book_id"] }})' class="button" style="width : fit-content; align-self: center"> DELETE BOOK </button>
+        </div>
+    </body>
+
+</html>

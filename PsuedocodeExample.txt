@@ -1,0 +1,49 @@
+
+
+
+
+Psuedocode:
+Login system
+
+DISPLAY username prompt field
+DISPLAY password prompt field
+DISPLAY submit button
+
+INPUT username
+INPUT password
+INPUT press submit button
+
+PROCESS create passwordHash from password
+
+IF username IN user database THEN
+    IF passwordHash in user THEN
+        DISPLAY "Login successful"
+        PROCESS redirect to home page
+    ENDIF
+    
+    DISPLAY "Password not valid"
+ELSE
+    DISPLAY "Username not valid"
+END IFELSE
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
